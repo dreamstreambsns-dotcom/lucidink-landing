@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LucidInk — See What Your Mind Sees</title>
+  <meta name="description" content="LucidInk transforms your dreams into visual art — a mirror for your subconscious. Explore dream symbolism, track patterns, and discover what your mind is telling you.">
+  <meta property="og:title" content="LucidInk — See What Your Mind Sees">
+  <meta property="og:description" content="Your dreams are a language. LucidInk helps you read them. AI-powered dream visualization for self-discovery.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lucidink.surge.sh">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --navy: #0a0a2e;
+      --purple: #7c3aed;
+      --violet: #a855f7;
+      --gold: #f59e0b;
+      --pink: #ec4899;
+      --glass: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--navy);
+      color: #fff;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Stars background */
+    .stars {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration) ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--min-opacity); }
+      50% { opacity: var(--max-opacity); }
+    }
+
+    /* Gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 400px; height: 400px; background: rgba(124,58,237,0.15); top: -100px; right: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: rgba(236,72,153,0.1); bottom: 20%; left: -50px; }
+    .orb-3 { width: 350px; height: 350px; background: rgba(168,85,247,0.1); top: 50%; right: 10%; }
+
+    section { position: relative; z-index: 1; }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      background: rgba(10,10,46,0.8);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 32px;
+      animation: fadeInUp 0.8s ease;
+    }
+    .hero-badge span { color: var(--gold); }
+    
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.8s ease 0.1s both;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--purple), var(--pink), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: rgba(255,255,255,0.6);
+      max-width: 600px;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Email form */
+    .email-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      width: 100%;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+    .email-form input {
+      flex: 1;
+      padding: 16px 24px;
+      border-radius: 50px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.3s;
+    }
+    .email-form input::placeholder { color: rgba(255,255,255,0.3); }
+    .email-form input:focus { border-color: var(--purple); }
+    .email-form button {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .email-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+    }
+    .form-note {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 16px;
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+    .form-success {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 18px;
+      display: none;
+    }
+    .incentive-banner {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(236,72,153,0.2));
+      border: 1px solid rgba(124,58,237,0.3);
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 16px;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.8s ease 0.25s both;
+    }
+    .incentive-banner strong {
+      color: var(--gold);
+    }
+
+    /* Feature showcase */
+    .showcase {
+      padding: 100px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .showcase h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .showcase .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 18px;
+      margin-bottom: 60px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(124,58,237,0.3);
+    }
+    .feature-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      color: rgba(255,255,255,0.5);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Three ways section */
+    .three-ways {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .three-ways h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .three-ways .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 18px;
+      margin-bottom: 60px;
+    }
+    .ways-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+    .way-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .way-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(124,58,237,0.3);
+    }
+    .way-icon { font-size: 48px; margin-bottom: 16px; }
+    .way-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .way-card .who { color: var(--gold); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .way-card p { color: rgba(255,255,255,0.5); font-size: 15px; line-height: 1.6; }
+
+    /* Quote */
+    .jung-quote {
+      padding: 60px 24px;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .jung-quote blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(20px, 3vw, 28px);
+      font-style: italic;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 16px;
+    }
+    .jung-quote cite {
+      color: rgba(255,255,255,0.35);
+      font-size: 15px;
+      font-style: normal;
+    }
+
+    /* How it works */
+    .how-it-works {
+      padding: 100px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .how-it-works h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+    .step-number {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+    }
+    .step h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step p {
+      color: rgba(255,255,255,0.5);
+      font-size: 15px;
+    }
+
+    /* Social proof */
+    .social-proof {
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--purple), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 100px 24px;
+      text-align: center;
+    }
+    .cta-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      color: rgba(255,255,255,0.5);
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--glass-border);
+      padding: 40px 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.3);
+      font-size: 14px;
+    }
+    footer a { color: var(--purple); text-decoration: none; }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .email-form { flex-direction: column; }
+      .email-form button { width: 100%; }
+      .stats { gap: 32px; }
+      .step { flex-direction: column; text-align: center; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Stars -->
+  <div class="stars" id="stars"></div>
+  
+  <!-- Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="logo">🌙 LucidInk</div>
+    <button class="nav-cta" onclick="document.getElementById('email').focus()">Get Early Access</button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">🚀 <span>Coming Soon</span> — iOS & Android</div>
+    <h1>See What Your<br><span class="gradient">Mind Sees</span></h1>
+    <p>Your dreams are a window into your subconscious. LucidInk transforms them into visual art — so you can finally see the patterns, symbols, and stories your sleeping mind is trying to tell you.</p>
+    
+    <div class="incentive-banner">🎁 Join the waitlist → get <strong>10 free AI dream images</strong> at launch</div>
+    
+    <form class="email-form" id="waitlist-form" onsubmit="handleSubmit(event)">
+      <input type="email" id="email" placeholder="Enter your email" required>
+      <button type="submit">Get Early Access</button>
+    </form>
+    <p class="form-note">🔒 No spam. Just a heads up when we launch.</p>
+    <p class="form-success" id="success-msg">🎉 You're in! 10 free AI dream images waiting for you at launch 🌙</p>
+  </section>
+
+  <!-- Features -->
+  <section class="showcase">
+    <h2>Your Subconscious, Visualized</h2>
+    <p class="subtitle">Tools to capture, see, and understand what your dreams are telling you</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🪞</div>
+        <h3>Mirror Your Inner World</h3>
+        <p>AI doesn't just illustrate your words — it interprets dream symbolism. Water, falling, flying, doors — each image reflects what your subconscious is processing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎙️</div>
+        <h3>Capture Before It Fades</h3>
+        <p>Wake up, tap record, speak. Dreams vanish in minutes — voice journaling catches them raw and real, before your conscious mind rewrites them.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3>Sketch What You Saw</h3>
+        <p>Some dream images defy words. Draw a rough sketch and let AI expand it — bridging what you felt and what you can express.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎭</div>
+        <h3>Know Your Dream Characters</h3>
+        <p>Who keeps appearing in your dreams? Track recurring figures — they often represent parts of yourself you haven't met yet.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>Discover Hidden Patterns</h3>
+        <p>AI maps recurring themes, symbols, and emotions across your dream journal — revealing connections you'd never notice on your own.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Shared Dreamscape</h3>
+        <p>Explore a community of dreamers. See what others are dreaming. You'll be surprised how many symbols we share.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Jung Quote -->
+  <section class="jung-quote">
+    <blockquote>"Who looks outside, dreams; who looks inside, awakes."</blockquote>
+    <cite>— Carl Jung</cite>
+  </section>
+
+  <!-- Three Ways to Explore -->
+  <section class="three-ways">
+    <h2>Three Ways to Explore</h2>
+    <p class="subtitle">LucidInk meets you wherever you are on the journey inward</p>
+    
+    <div class="ways-grid">
+      <div class="way-card">
+        <div class="way-icon">🌙</div>
+        <div class="who">For Dreamers</div>
+        <h3>Lucid Journaling</h3>
+        <p>Build a visual dream journal that helps you remember more, dream deeper, and recognize dream signs. Perfect for lucid dreamers and anyone who wants to stop forgetting their dreams.</p>
+      </div>
+      <div class="way-card">
+        <div class="way-icon">🎨</div>
+        <div class="who">For Artists</div>
+        <h3>Truly Original Art</h3>
+        <p>Forget generic AI prompts. Your dreams are the most original source material in existence — no one else has them. Turn your subconscious into a style that's impossible to copy.</p>
+      </div>
+      <div class="way-card">
+        <div class="way-icon">🧠</div>
+        <div class="who">For the Curious Mind</div>
+        <h3>Self-Discovery</h3>
+        <p>Explore the symbols, archetypes, and emotions your mind processes at night. Track patterns over time. Understand your shadow, your fears, and your desires — through the art your dreams create.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div>
+          <h3>Record Your Dream</h3>
+          <p>Type or speak your dream the moment you wake. AI structures it with mood, symbols, and key details — preserving what your conscious mind would edit away.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div>
+          <h3>Choose How to See It</h3>
+          <p>Pick an art style — surrealist, cinematic, watercolor, dark fantasy. Optionally sketch what you saw. Each choice reveals different layers of meaning.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div>
+          <h3>AI Interprets & Visualizes</h3>
+          <p>Our dream interpreter reads the symbolism — not just the words. It understands that water means emotion, doors mean transition, falling means letting go. The result is art that captures how the dream <em>felt</em>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div>
+          <h3>Reflect & Discover</h3>
+          <p>Over time, your gallery becomes a visual map of your inner world. Share with the community, export for social media, or just sit with what your mind is showing you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social proof -->
+  <section class="social-proof">
+    <div class="stats">
+      <div>
+        <div class="stat-number">12</div>
+        <div class="stat-label">Art Styles to See Your Dreams Through</div>
+      </div>
+      <div>
+        <div class="stat-number">∞</div>
+        <div class="stat-label">Unique Dreams, Zero Duplicates</div>
+      </div>
+      <div>
+        <div class="stat-number">2</div>
+        <div class="stat-label">Stage AI — Interpret, Then Create</div>
+      </div>
+      <div>
+        <div class="stat-number">1</div>
+        <div class="stat-label">Tap to Start Recording</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>What Is Your Mind Trying to Show You?</h2>
+    <p>Coming soon to iOS & Android. Join the waitlist — first 500 signups get 10 free AI dream images 🎁</p>
+    <form class="email-form" style="margin:0 auto; animation:none;" onsubmit="handleSubmit(event)">
+      <input type="email" placeholder="your@email.com" required>
+      <button type="submit">Get Early Access</button>
+    </form>
+    <p class="form-note" style="margin-top:16px;">🔒 No spam, ever.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 LucidInk. Built with 🌙 and a little bit of introspection.</p>
+  </footer>
+
+  <script>
+    // Generate stars
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2 + 0.5;
+      star.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        top: ${Math.random() * 100}%; left: ${Math.random() * 100}%;
+        --duration: ${Math.random() * 4 + 2}s;
+        --min-opacity: ${Math.random() * 0.2};
+        --max-opacity: ${Math.random() * 0.5 + 0.3};
+        animation-delay: ${Math.random() * 4}s;
+      `;
+      starsEl.appendChild(star);
+    }
+
+    // Waitlist form
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.querySelector('input[type="email"]').value;
+      
+      const waitlist = JSON.parse(localStorage.getItem('lucidink_waitlist') || '[]');
+      if (!waitlist.includes(email)) {
+        waitlist.push(email);
+        localStorage.setItem('lucidink_waitlist', JSON.stringify(waitlist));
+      }
+
+      fetch('https://dreamstream-api.onrender.com/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
+
+      form.style.display = 'none';
+      const successMsg = document.getElementById('success-msg');
+      if (successMsg) {
+        successMsg.style.display = 'block';
+      } else {
+        form.insertAdjacentHTML('afterend', '<p style="color:#f59e0b;font-weight:600;font-size:18px;margin-top:16px;">🎉 You\'re on the list!</p>');
+      }
+    }
+  </script>
+</body>
+</html>
